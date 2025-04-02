@@ -1,5 +1,4 @@
-import { vertex } from '@ai-sdk/google-vertex';
-import { perplexity } from '@ai-sdk/perplexity';
+import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
@@ -9,8 +8,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = streamText({
-    // model: vertex('gemini-1.5-flash', { useSearchGrounding: true }),
-    model: perplexity('sonar-pro'),
+    model: openai('gpt-4-turbo-preview'),
     messages,
   });
 
