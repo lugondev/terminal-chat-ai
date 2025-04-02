@@ -78,6 +78,22 @@ export function Terminal() {
 		}
 	}, [chatMessages])
 
+	// Update local input when chat input changes
+	useEffect(() => {
+		if (chatInput !== input) {
+			setInput(chatInput)
+		}
+	}, [chatInput])
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		const value = e.target.value
+		setInput(value)
+		// Keep chat input in sync when user is typing
+		if (value !== chatInput) {
+			handleChatInputChange({target: {value}} as any)
+		}
+	}
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!input.trim()) return
@@ -94,14 +110,15 @@ export function Terminal() {
 				response = `Available commands:
 
   about        About this terminal
-  chat         Chat with AI assistant
   clear        Clear the terminal
   date         Show current date and time
   echo         Print a line of text
   help         Show this help message
   projects     List featured projects
   social       Display social media links
-  welcome      Display welcome message`
+  welcome      Display welcome message
+
+Type any message to chat with the AI assistant.`
 				break
 			case 'clear':
 				setMessages([])
@@ -145,23 +162,6 @@ Type 'projects' to see my featured work.
 
 You can type any message to chat with the AI assistant!`
 				break
-			case 'chat':
-				const chatMessage = input.substring(5).trim()
-				if (!chatMessage) {
-					response = 'Please provide a message to chat with the AI assistant'
-				} else {
-					// Show loading state
-					setMessages((prev) => [...prev, {type: 'system', content: `Thinking${loadingDots}`}])
-					// Submit chat message
-					handleChatInputChange({target: {value: chatMessage}} as any)
-					const form = document.createElement('form')
-					const submitEvent = new Event('submit', {cancelable: true})
-					await handleChatSubmit(submitEvent)
-					// Remove loading message
-					setMessages((prev) => prev.slice(0, -1))
-					return // Skip adding response since it's handled by the streaming effect
-				}
-				break
 			default:
 				if (command.startsWith('project ')) {
 					const num = command.split(' ')[1]
@@ -192,13 +192,27 @@ Tech Stack:
 					}
 				} else {
 					// If not a recognized command, treat as chat message
-					setMessages((prev) => [...prev, {type: 'system', content: `Thinking${loadingDots}`}])
-					handleChatInputChange({target: {value: input}} as any)
-					const form = document.createElement('form')
-					const submitEvent = new Event('submit', {cancelable: true})
-					await handleChatSubmit(submitEvent)
-					setMessages((prev) => prev.slice(0, -1))
-					return // Skip adding response since it's handled by the streaming effect
+					const message = input
+					setInput('') // Clear input immediately
+
+					// Sync with chat input
+					handleChatInputChange({target: {value: ''}} as any)
+
+					// Remove any previous "Thinking..." messages
+					setMessages((prev) => prev.filter((msg) => msg.content !== 'Thinking...'))
+
+					// Submit the chat form with the captured message
+					setTimeout(() => {
+						handleChatSubmit({
+							preventDefault: () => {},
+							type: 'submit',
+							data: {input: message},
+						} as any)
+					}, 0)
+
+					// Add a temporary thinking message until the real response comes
+					setMessages((prev) => [...prev, {type: 'assistant', content: 'Thinking...'}])
+					return // Response will be handled by the streaming effect
 				}
 		}
 
@@ -231,32 +245,38 @@ Tech Stack:
 						{message.type === 'user' && <span className='cursor' />}
 					</div>
 				))}
+				{status === 'streaming' && (
+					<div className='mb-2 whitespace-pre-wrap text-green-400'>
+						<span className='mr-2 opacity-70'>$</span>
+						Thinking{loadingDots}
+					</div>
+				)}
 			</ScrollArea>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
 					handleSubmit(e)
 				}}
-				className='p-4 border-t border-white/10'>
+				className='px-4 py-2 border-t border-white/20 bg-black/40'>
 				<div className='flex items-center'>
-					<span className='mr-2 text-green-400 opacity-70'>{'>'}</span>
+					<span className='mr-2 opacity-70 text-green-400'>{'>'}</span>
 					<textarea
 						ref={inputRef}
 						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						onKeyDown={async (e) => {
+						onChange={handleInputChange}
+						onKeyDown={(e) => {
 							if (e.key === 'Enter' && !e.shiftKey) {
 								e.preventDefault()
-								await handleSubmit(e)
+								handleSubmit(e)
 							}
 						}}
-						className='flex-1 bg-transparent border-none outline-none resize-none text-green-400 placeholder-green-800'
-						placeholder='Type a command...'
+						className='flex-1 bg-transparent border-none outline-none resize-none text-green-400 placeholder-green-700 text-sm leading-normal'
+						placeholder='Type a command or message...'
 						rows={1}
 						disabled={status === 'streaming'}
 					/>
-					<button type='submit' className={cn('ml-2 px-3 py-1 rounded bg-green-800 text-green-100 hover:bg-green-700 transition-colors', status === 'streaming' && 'opacity-50 cursor-not-allowed')} disabled={status === 'streaming'}>
-						Send
+					<button type='submit' className={cn('ml-2 text-xs text-green-400/70 hover:text-green-400 transition-colors', status === 'streaming' && 'opacity-50 cursor-not-allowed')} disabled={status === 'streaming'}>
+						[send]
 					</button>
 				</div>
 			</form>
