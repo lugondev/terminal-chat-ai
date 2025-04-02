@@ -56,11 +56,21 @@ export function Terminal() {
 	}, [])
 
 	useEffect(() => {
-		// Scroll to bottom on new message
-		if (scrollAreaRef.current) {
-			scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+		// Scroll to bottom on new message or streaming update
+		const scrollViewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]')
+		if (scrollViewport) {
+			requestAnimationFrame(() => {
+				scrollViewport.scrollTop = scrollViewport.scrollHeight
+			})
 		}
-	}, [messages, chatMessages])
+	}, [messages, chatMessages, status]) // Added status to dependencies to ensure scroll during streaming updates
+
+	// Focus input when assistant finishes responding
+	useEffect(() => {
+		if (status !== 'streaming') {
+			inputRef.current?.focus()
+		}
+	}, [status])
 
 	// Handle streaming chat responses
 	useEffect(() => {
@@ -123,6 +133,7 @@ Type any message to chat with the AI assistant.`
 			case 'clear':
 				setMessages([])
 				setInput('')
+				inputRef.current?.focus() // Focus after clearing
 				return
 			case 'about':
 				response = 'A terminal-style chat interface built with Next.js and shadcn/ui, inspired by https://terminal.satnaing.dev/'
@@ -212,14 +223,16 @@ Tech Stack:
 
 					// Add a temporary thinking message until the real response comes
 					setMessages((prev) => [...prev, {type: 'assistant', content: 'Thinking...'}])
+					inputRef.current?.focus() // Focus after initiating chat
 					return // Response will be handled by the streaming effect
 				}
 		}
 
-		// Add system response
+		// Add system response (for local commands)
 		setMessages((prev) => [...prev, {type: 'system', content: response}])
 
-		setInput('')
+		setInput('') // Clear input for local commands
+		inputRef.current?.focus() // Focus after local command response
 	}
 
 	return (
