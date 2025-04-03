@@ -5,8 +5,8 @@ import BlinkingPointsBackground from '@/components/BlinkingPointsBackground' // 
 const inter = Inter({subsets: ['latin']})
 
 export const metadata = {
-	title: 'AI SDK - Next.js OpenAI Examples',
-	description: 'Examples of using the AI SDK with Next.js and OpenAI.',
+	title: 'Terminal Chatbot',
+	description: 'A chatbot application built with Next.js and the OpenAI API.',
 }
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
