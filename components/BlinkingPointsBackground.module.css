@@ -5,7 +5,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  z-index: 0; /* Layer above castle (-1) but below terminal (1+) */
+  z-index: 1; /* Layer above castle (-1) but below terminal (1+) */
   pointer-events: none; /* Allow clicks to pass through */
 }
 
@@ -16,8 +16,8 @@
   background-color: rgba(255, 255, 255, 0.5); /* Adjust color and opacity */
   border-radius: 50%;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.7); /* Optional glow */
-  opacity: 0.8; /* Make them visible by default now */
-  /* animation-name: blinkFly; */ /* Removed animation */
+  opacity: 0; /* Start invisible for animation */
+  animation-name: blinkFly; /* Re-enabled animation */
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   /* animation-duration and animation-delay are set inline in the component */
