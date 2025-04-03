@@ -33,6 +33,14 @@ To run the example locally you need to:
 5. `pnpm install` to install the required dependencies.
 6. `pnpm dev` to launch the development server.
 
+## Features
+
+### Terminal with API Key Check
+
+This example includes an interactive terminal component (`components/terminal.tsx`) that communicates with a backend API (`app/api/terminal-chat/route.ts`) powered by the OpenAI API.
+
+To enhance security and provide user feedback, an API endpoint (`app/api/check-key/route.ts`) verifies the `OPENAI_API_KEY` from your `.env.local` file upon loading the terminal page. If the key is missing or invalid, the terminal will display an appropriate message guiding the user to set it up correctly.
+
 ## Learn More
 
 To learn more about OpenAI, Next.js, and the AI SDK take a look at the following resources:
