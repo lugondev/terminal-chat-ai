@@ -258,9 +258,10 @@ Tech Stack:
 	}
 
 	return (
-		<div className='w-full max-w-3xl mx-auto h-[600px] rounded-lg terminal-window terminal-text terminal-bg'>
-			{' '}
-			{/* Added terminal-bg */}
+		<div
+			className='w-full max-w-3xl mx-auto h-[600px] rounded-lg terminal-window terminal-text terminal-bg'
+			onClick={() => inputRef.current?.focus()} // Add this click handler to focus input
+		>
 			<div className='flex items-center justify-between px-4 py-2 terminal-header'>
 				<div className='flex space-x-2'>
 					{/* Use Dracula comment color for dots for better theme consistency */}
