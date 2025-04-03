@@ -50,12 +50,36 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Add syntax colors referencing CSS variables
+        'syntax-green': 'hsl(var(--syntax-green))',
+        'syntax-cyan': 'hsl(var(--syntax-cyan))',
+        'syntax-purple': 'hsl(var(--syntax-purple))',
+        'syntax-yellow': 'hsl(var(--syntax-yellow))',
+        'syntax-orange': 'hsl(var(--syntax-orange))',
+        'syntax-pink': 'hsl(var(--primary))', // Assuming pink uses primary
+        'syntax-comment': 'hsl(var(--syntax-comment))',
+        'syntax-selection': 'hsl(var(--syntax-selection))',
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
+      // Keep the dracula object if it's used elsewhere, otherwise it could be removed.
+      // For now, let's assume it might be needed for other purposes.
+      dracula: {
+        background: "#282A36",
+        foreground: "#F8F8F2",
+        selection: "#44475A",
+        comment: "#6272A4",
+        red: "#FF5555",
+        orange: "#FFB86C",
+        yellow: "#F1FA8C",
+        green: "#50FA7B",
+        purple: "#BD93F9",
+        cyan: "#8BE9FD",
+        pink: "#FF79C6",
+      }
+    },
+    borderRadius: {
+      lg: "var(--radius)",
+      md: "calc(var(--radius) - 2px)",
+      sm: "calc(var(--radius) - 4px)",
     },
   },
   plugins: [],

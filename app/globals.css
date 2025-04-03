@@ -3,60 +3,82 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142.1 76.2% 36.3%;
-    --radius: 0.5rem;
-  }
+  :root { /* Apply Dracula theme directly */
+    /* Base */
+    --background: 231 15% 18%;    /* #282A36 */
+    --foreground: 60 30% 96%;     /* #F8F8F2 */
 
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 142.1 70.6% 45.3%;
-    --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142.4 71.8% 29.2%;
+    /* UI */
+    --card: 232 14% 31%;          /* #44475A */ /* Use Selection/Current Line color */
+    --card-foreground: 60 30% 96%; /* #F8F8F2 */
+    --popover: 232 14% 31%;       /* #44475A */
+    --popover-foreground: 60 30% 96%; /* #F8F8F2 */
+    --border: 225 27% 51%;         /* #6272A4 */ /* Use Comment color */
+    --input: 232 14% 31%;          /* #44475A */
+    --radius: 0.5rem;
+
+    /* Primary / Accent */
+    --primary: 327 100% 74%;       /* #FF79C6 Pink */
+    --primary-foreground: 231 15% 18%; /* Background for contrast */
+    --secondary: 225 27% 51%;      /* #6272A4 Comment */
+    --secondary-foreground: 60 30% 96%; /* #F8F8F2 */
+    --accent: 225 27% 51%;         /* #6272A4 Comment */
+    --accent-foreground: 60 30% 96%; /* #F8F8F2 */
+    --ring: 271 89% 77%;           /* #BD93F9 Purple */
+
+    /* State / Semantic */
+    --destructive: 0 100% 67%;       /* #FF5555 Red */
+    --destructive-foreground: 60 30% 96%; /* #F8F8F2 */
+    --muted: 232 14% 31%;          /* #44475A */
+    --muted-foreground: 225 27% 51%; /* #6272A4 Comment */
+
+    /* Syntax / Other Dracula Colors */
+    --syntax-cyan: 192 95% 77%;   /* #8BE9FD */
+    --syntax-green: 145 93% 64%;  /* #50FA7B */
+    --syntax-orange: 35 100% 70%; /* #FFB86C */
+    --syntax-purple: 271 89% 77%; /* #BD93F9 */
+    --syntax-yellow: 65 93% 75%;  /* #F1FA8C */
+    --syntax-comment: 225 27% 51%; /* #6272A4 */
+    --syntax-selection: 232 14% 31%; /* #44475A */
   }
 }
 
 @layer base {
+  html {
+    background-color: hsl(var(--background)); /* Apply background to html */
+  }
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    background-color: transparent; /* Make body background transparent */
+  }
+
+  /* Castle background with proper z-index layering */
+  body::before {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45vh;
+    background-image: url('/images/castle.svg');
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: contain;
+    z-index: -1; /* Layer behind points (0) and terminal (1) */
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, white 30%, transparent);
+    mask-image: linear-gradient(to top, white 30%, transparent);
+    filter: brightness(1.8);
+    opacity: 0.9;
   }
 }
+
 
 /* Terminal specific styles */
 @font-face {
@@ -73,23 +95,33 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Custom scrollbar for terminal */
+/* Custom scrollbar for terminal using Dracula colors */
 .terminal-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
 
 .terminal-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: hsl(var(--background)); /* Background */
 }
 
 .terminal-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  /* Corrected: Use hsla for background */
+  background: hsla(var(--syntax-selection), 0.8); /* Selection/Current Line with alpha */
   border-radius: 4px;
 }
 
 .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: hsl(var(--syntax-comment)); /* Comment */
 }
+
+/* Class to apply the SVG background */
+.terminal-bg {
+  background-image: url('/images/terminal.svg');
+  background-size: cover; /* Or 'contain', adjust as needed */
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
@@ -100,22 +132,46 @@
   display: inline-block;
   width: 8px;
   height: 15px;
-  background-color: #4ade80;
+  background-color: hsl(var(--syntax-green)); /* Use Dracula Green */
   margin-left: 4px;
   animation: blink 1s step-end infinite;
 }
 
 .terminal-window {
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px hsla(var(--background), 0.5); /* Subtle shadow based on background */
+  /* backdrop-filter: blur(2px); */ /* Keep it subtle if used */
+  /* Corrected: Use hsla for border */
+  border: 1px solid hsla(var(--border), 0.3); /* Use border color with alpha */
+  /* bg-background/80 is okay, but let's ensure the background image shows through */
+  /* Use a slightly less opaque background to let the SVG show */
+  @apply bg-background/70 backdrop-blur-sm;
+  position: relative;
+  z-index: 1; /* Ensure terminal appears above castle background */
 }
 
 .terminal-header {
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  @apply bg-background/90; /* Slightly more opaque background */
+  /* Corrected: Use hsla for border-bottom */
+  border-bottom: 1px solid hsla(var(--border), 0.5); /* Use border color with alpha */
 }
 
 .terminal-body {
-  background: rgba(0, 0, 0, 0.8);
+  /* Keep terminal body background consistent with header */
+  /* Using standard CSS with hsla for transparency */
+  /* Make terminal body more transparent to see the SVG */
+  background-color: hsla(var(--background), 0.6);
 }
+
+/* Dracula text colors */
+.terminal-text-system { @apply text-foreground; } /* Default text */
+.terminal-text-user { @apply text-syntax-green; } /* Green for user input prompt */
+.terminal-text-input { @apply text-foreground; } /* White for user typing */
+.terminal-text-assistant { @apply text-syntax-cyan; } /* Cyan for AI response */
+.terminal-text-command-output { @apply text-foreground; } /* White for command output */
+.terminal-text-welcome { @apply text-syntax-purple; } /* Purple for welcome */
+.terminal-text-help { @apply text-syntax-yellow; } /* Yellow for help */
+.terminal-text-social { @apply text-syntax-orange; } /* Orange for social */
+.terminal-text-projects { @apply text-syntax-pink; } /* Pink for projects (using primary) */
+.terminal-text-prompt { @apply opacity-70 mr-2; } /* General prompt style */
+
+/* Remove Pixel Punk Background class */
